@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Fav Cats</string>
+    <string name="title_home">Home</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="title_upload">Upload</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="network_not_connected">Your device is not connected to the internet. Please resolve connectivity issues and try again.</string>
+
+    <string name="err_network_call_time_out">Connection timeout: server is taking too long to reply</string>
+
+</resources>
