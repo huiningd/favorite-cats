@@ -3,12 +3,20 @@
     <string name="title_home">Home</string>
     <string name="title_favorite">Favorite</string>
     <string name="title_upload">Upload</string>
+    <string name="title_detail">Detail</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="load_more">Load more …</string>
+
+    <string name="default_quote">“There are two means of refuge from the miseries of life: music and cats.” – Albert Schweitzer</string>
 
     <string name="network_not_connected">Your device is not connected to the internet. Please resolve connectivity issues and try again.</string>
 
     <string name="err_network_call_time_out">Connection timeout: server is taking too long to reply</string>
+    <string name="add_to_favorite">Add to favorite</string>
+    <string name="cat">Cat</string>
+    <string name="large_cat_image">large cat image</string>
+    <string name="image_id">"Image ID: "</string>
 
 </resources>

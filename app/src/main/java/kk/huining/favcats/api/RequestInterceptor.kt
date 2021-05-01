@@ -10,19 +10,20 @@ import javax.inject.Singleton
 @Singleton
 class RequestInterceptor @Inject constructor() : Interceptor {
 
-    // curl --location --request GET 'https://api.thecatapi.com/v1/images/search?format=json' \
-    //--header 'Content-Type: application/json' \
-    //--header 'x-api-key: DEMO-API-KEY'
-
     override fun intercept(chain: Interceptor.Chain): Response {
         var request: Request = chain.request()
 
-        request= request.newBuilder()
-            .addHeader(HEADER_API_KEY, API_KEY)
-            .build()
-
-        Timber.d("--> Sending request: url ${request.url}, header: ${request.headers}")
-
+        // Check "No-Authentication" to see if a request needs authorization header.
+        request = if (request.header("No-Authentication") == null) {
+            Timber.d("Should add API key to header")
+            request.newBuilder()
+                .addHeader(HEADER_API_KEY, API_KEY)
+                .build()
+        } else {
+            request.newBuilder()
+                .build()
+        }
+        //Timber.d("--> Sending request: url ${request.url}, header: ${request.headers}")
         return chain.proceed(request)
     }
 

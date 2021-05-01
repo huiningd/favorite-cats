@@ -7,19 +7,33 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="kk.huining.favcats.ui.home.HomeFragment"
+        android:name="kk.huining.favcats.ui.home.GridFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_grid">
+        <action
+            android:id="@+id/action_grid_to_detail"
+            app:destination="@id/image_detail" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_favorite"
         android:name="kk.huining.favcats.ui.favorite.FavoriteFragment"
         android:label="@string/title_favorite"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_favorite" />
 
     <fragment
         android:id="@+id/navigation_upload"
         android:name="kk.huining.favcats.ui.notifications.NotificationsFragment"
         android:label="@string/title_upload"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/image_detail"
+        android:name="kk.huining.favcats.ui.detail.ImageDetailFragment"
+        android:label="@string/title_detail"
+        tools:layout="@layout/fragment_detail" >
+        <argument
+            android:name="imageId"
+            app:argType="string" />
+    </fragment>
 </navigation>

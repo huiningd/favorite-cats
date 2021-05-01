@@ -26,6 +26,7 @@ package kk.huining.favcats.data.model
 data class Image(
     var id: String? = null,
     var url: String? = null,
+    var isFavorite: Boolean = false,
     var width: Int? = null,
     var height: Int? = null,
     var mime_type: String? = null,
@@ -36,7 +37,14 @@ data class Image(
 )
 
 data class Breed(
-    var id: Int? = null,
+    var id: String? = null,
     var name: String? = null,
     var wikipedia_url: String? = null,
+    var origin: String? = null,
+    var description: String? = null,
+    var life_span: String? = null,
+    var intelligence: Int? = null,
+    var affection_level: Int? = null,
+    var stranger_friendly: Int? = null,
+    //var image: Image? = null
 )
