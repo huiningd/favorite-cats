@@ -8,19 +8,23 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="load_more">Load more …</string>
-
     <string name="default_quote">“There are two means of refuge from the miseries of life: music and cats.” – Albert Schweitzer</string>
-
     <string name="network_not_connected">Your device is not connected to the internet. Please resolve connectivity issues and try again.</string>
-
     <string name="err_network_call_time_out">Connection timeout: server is taking too long to reply</string>
     <string name="err_detail_no_image_id">Cannot go to detail because image ID is missing</string>
     <string name="err_fav_no_image_id">Cannot add to favorite because image ID is missing</string>
-
     <string name="cat">Cat</string>
     <string name="large_cat_image">large cat image</string>
-    <string name="image_id">"Image ID: "</string>
     <string name="add_to_favorite">Add to favorite</string>
     <string name="err_failed_add_to_fav">Failed adding image to favorite, please try again later</string>
+    <string name="select_a_cat_breed">Select a cat breed: </string>
+    <string name="loading_cat_breeds">Loading cat breeds…</string>
+    <string name="image_id_s">Image ID: %s</string>
+    <string name="breed_name_s">Breed name: %s</string>
+    <string name="breed_name_unknown">Breed name unknown</string>
+    <string name="breed_origin_s">Origin: %s</string>
+    <string name="breed_des_s">Description: %s</string>
+    <string name="no_breeds">No cat breeds info</string>
+    <string name="failed_to_get_breeds">Failed to fetch cat breeds, you will not be able to filter cats by breed</string>
 
 </resources>

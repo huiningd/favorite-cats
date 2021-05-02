@@ -20,15 +20,32 @@
         android:layout_height="match_parent"
         android:paddingTop="?attr/actionBarSize" >
 
-        <!--<TextView
-            android:id="@+id/title"
+        <LinearLayout
+            android:id="@+id/breed_selector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin"
-            android:text="@string/default_quote"
-            android:textAlignment="center"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />-->
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/breed_selector_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_s"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginEnd="0dp"
+                android:text="@string/select_a_cat_breed"/>
+
+            <Spinner
+                android:id="@+id/breed_spinner"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/margin"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/image_grid"
@@ -37,27 +54,34 @@
             app:layout_constraintBottom_toTopOf="@id/load_more_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/breed_selector" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/load_more_button"
-            android:paddingBottom="?attr/actionBarSize"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="@dimen/margin"
             android:enabled="@{!homeViewModel.isLoading}"
-            android:onClick="@{() -> homeViewModel.getRandomImages()}"
+            android:onClick="@{() -> homeViewModel.test()}"
             android:paddingLeft="@dimen/padding_l"
             android:paddingRight="@dimen/padding_l"
             android:text="@string/load_more"
             android:textAllCaps="false"
             android:textColor="@color/colorAccent"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/filler"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/filler"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

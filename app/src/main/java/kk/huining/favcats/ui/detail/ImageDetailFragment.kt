@@ -51,7 +51,7 @@ class ImageDetailFragment: BaseFragment() {
     }
 
     private fun setupUI() {
-        binding.imageID = imageId
+        binding.imageID = getString(R.string.image_id_s, imageId)
         setupFab()
         getImageDetailInfo()
         fetchLargeImageById()
@@ -61,7 +61,12 @@ class ImageDetailFragment: BaseFragment() {
         val image = sharedVM.getCachedImage(imageId)
         val breeds = image?.breeds
         if (breeds != null && breeds.isNotEmpty()) {
-            binding.breed = breeds[0] // TODO loop list, to string
+            val breed = breeds[0] // TODO loop list, to string
+            binding.breedName = getString(R.string.breed_name_s, breed.name)
+            binding.breedOrigin = getString(R.string.breed_origin_s, breed.origin)
+            binding.breedDescription = getString(R.string.breed_des_s, breed.description)
+        } else {
+            binding.breedName = getString(R.string.breed_name_unknown)
         }
     }
 

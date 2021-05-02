@@ -43,7 +43,7 @@ interface CatsApi {
     @GET("breeds")
     @Headers("No-Authentication: true")
     suspend fun getBreeds(
-        @Query("limit") limit: Int = 10,
+        @Query("limit") limit: Int = 100,
         @Query("page") page: Int = 0
     ): Response<List<Breed>>
 

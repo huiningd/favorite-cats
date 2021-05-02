@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -22,7 +23,8 @@ import kk.huining.favcats.ui.home.GridFragmentDirections.Companion.actionGridToD
 import timber.log.Timber
 import javax.inject.Inject
 
-class GridFragment : BaseFragment() {
+
+class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -31,7 +33,9 @@ class GridFragment : BaseFragment() {
     private lateinit var viewModel: GridViewModel
     private lateinit var binding: FragmentGridBinding
     private var imageAdapter: ImageAdapter? = null
+
     private var clickedFavPos: Int? = null
+    private var breeds: List<Breed>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Creates an instance of Presentation component and injects this fragment to the Component.
@@ -49,9 +53,22 @@ class GridFragment : BaseFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_grid, container, false)
         binding.homeViewModel = viewModel
         binding.lifecycleOwner = this
-        setupRecyclerView()
+
         observeUiState()
+        setupCatBreedsSelector()
+        setupRecyclerView()
         return binding.root
+    }
+
+    private fun setupCatBreedsSelector() {
+        sharedVM.cachedBreeds.observe( viewLifecycleOwner, Observer { list ->
+            if (list.isEmpty()) {
+                fetchBreeds()
+            } else {
+                setupSpinner(list)
+                breeds = list
+            }
+        })
     }
 
     private fun setupRecyclerView() {
@@ -71,6 +88,12 @@ class GridFragment : BaseFragment() {
                 imageAdapter?.submitList(list as MutableList<Image>?)
             }
         })
+    }
+
+    private fun fetchBreeds() {
+        if (isNetworkAvailable()) {
+            viewModel.getBreeds()
+        }
     }
 
     private fun fetchMore() {
@@ -111,26 +134,20 @@ class GridFragment : BaseFragment() {
     private fun observeUiState() {
         viewModel.uiState.observe(viewLifecycleOwner, Observer {
             val uiModel = it ?: return@Observer
-            if (uiModel.loadImageListError != null && !uiModel.loadImageListError.consumed) {
-                uiModel.loadImageListError.consume()?.let { msg -> handleError(msg) }
+            if (uiModel.requestError != null && !uiModel.requestError.consumed) {
+                uiModel.requestError.consume()?.let { msg -> handleError(msg) }
             }
             if (uiModel.loadImageListSuccess != null && !uiModel.loadImageListSuccess.consumed) {
                 uiModel.loadImageListSuccess.consume()?.let { res -> handleLoadImageSuccess(res) }
             }
-            if (uiModel.getBreedsError != null && !uiModel.getBreedsError.consumed) {
-                uiModel.getBreedsError.consume()?.let { msg -> handleError(msg) }
-            }
             if (uiModel.getBreedsSuccess != null && !uiModel.getBreedsSuccess.consumed) {
                 uiModel.getBreedsSuccess.consume()?.let { res -> handleGetBreedsSuccess(res) }
             }
-            if (uiModel.addToFavoritesError != null && !uiModel.addToFavoritesError.consumed) {
-                uiModel.addToFavoritesError.consume()?.let { msg -> handleError(msg) }
+            if (uiModel.getBreedsError != null && !uiModel.getBreedsError.consumed) {
+                uiModel.getBreedsError.consume()?.let { _ -> handleGetBreedsError() }
             }
             if (uiModel.addToFavoritesSuccess != null && !uiModel.addToFavoritesSuccess.consumed) {
                 uiModel.addToFavoritesSuccess.consume()?.let { res -> handleAddToFavoritesSuccess(res) }
-            }
-            if (uiModel.removeFromFavoritesError != null && !uiModel.removeFromFavoritesError.consumed) {
-                uiModel.removeFromFavoritesError.consume()?.let { msg -> handleError(msg) }
             }
             if (uiModel.removeFromFavoritesSuccess != null && !uiModel.removeFromFavoritesSuccess.consumed) {
                 uiModel.removeFromFavoritesSuccess.consume()?.let { res -> handleRemoveFromFavoritesSuccess(res) }
@@ -151,16 +168,71 @@ class GridFragment : BaseFragment() {
     }
 
     private fun handleGetBreedsSuccess(breeds: List<Breed>) {
-        // TODO
-        Timber.e("handleGetBreedsSuccess ${breeds.size}")
+        //Timber.d("handleGetBreedsSuccess ${breeds.size}") // 67
+        val mutableList = breeds.toMutableList()
+        mutableList.add(0, Breed(name = "No breed")) // add 'no breed' as the 1st element
+        sharedVM.cacheBreeds(mutableList.toList()) // observer will update UI
     }
 
     private fun handleLoadImageSuccess(images: List<Image>) {
         sharedVM.cacheSmallImages(images) // observer will update UI
     }
 
+    private fun handleGetBreedsError() {
+        binding.breedSelectorTitle.text = getString(R.string.no_breeds)
+        binding.breedSpinner.visibility = View.GONE
+        showInfoDialog(R.string.failed_to_get_breeds, "ErrorDialog")
+    }
+
     private fun handleError(msg: String) {
         showInfoDialog(msg, "ErrorDialog")
     }
 
+    private fun setupSpinner(breeds: List<Breed>) {
+        val breedNames = breeds.map { it.name }
+        Timber.e("breedNames $breedNames")
+        val spinner = binding.breedSpinner
+        spinner.onItemSelectedListener = this
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            breedNames
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            spinner.adapter = adapter
+
+            //Timber.d("sharedVM.selectedBreedPosition ${sharedVM.selectedBreedPosition}")
+            // auto-select previous breed
+            sharedVM.selectedBreedPosition.let {
+                if (it != 0) spinner.setSelection(it)
+            }
+        }
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+        val selectedBreedName: String? = parent.getItemAtPosition(pos).toString()
+        //Toast.makeText(requireContext(), "$selectedBreedName", Toast.LENGTH_SHORT).show()
+        // Only fetch from remote if user selected different breed
+        if (pos != sharedVM.selectedBreedPosition && isNetworkAvailable()) {
+            val selectedBreed = breeds?.firstOrNull { it.name == selectedBreedName }
+            if (selectedBreed?.id != null) {
+                viewModel.getImagesByBreed(selectedBreed.id!!)
+            } else {
+                viewModel.getRandomImages()
+            }
+        }
+        sharedVM.selectedBreedPosition = pos
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>) {
+        // Another interface callback
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Timber.e("onStop ")
+    }
 }

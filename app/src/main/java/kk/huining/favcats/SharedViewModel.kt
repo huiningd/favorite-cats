@@ -14,15 +14,20 @@ class SharedViewModel @Inject constructor(
 
     val cachedSmallImages: MutableLiveData<List<Image>> = MutableLiveData(emptyList())
     val cachedBreeds: MutableLiveData<List<Breed>> = MutableLiveData(emptyList())
+    var selectedBreedPosition: Int = 0 // default to 0
 
     fun cacheSmallImages(images: List<Image>) {
         cachedSmallImages.value = images
         Timber.e("cacheImages ${images.size}")
     }
 
+    fun clearCachedSmallImages() {
+        cachedBreeds.value = emptyList()
+    }
+
     fun cacheBreeds(breeds: List<Breed>) {
         cachedBreeds.value = breeds
-        Timber.e("cacheBreeds ${breeds.size}")
+        Timber.e("##### cacheBreeds ${breeds.size}")
     }
 
     fun addToCachedSmallImages(tmp: Image) {

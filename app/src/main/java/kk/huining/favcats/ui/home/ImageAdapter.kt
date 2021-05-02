@@ -84,6 +84,8 @@ class ImageDiffCallback : DiffUtil.ItemCallback<Image>() {
         return oldItem.id == newItem.id
     }
     override fun areContentsTheSame(oldItem: Image, newItem: Image): Boolean {
+        //Timber.e("oldItem $oldItem, newItem $newItem")
+        //Timber.e("areContentsTheSame ${oldItem == newItem}")
         return oldItem == newItem
     }
 }

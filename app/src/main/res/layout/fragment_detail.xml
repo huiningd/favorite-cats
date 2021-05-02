@@ -13,8 +13,16 @@
             type="String" />
 
         <variable
-            name="breed"
-            type="kk.huining.favcats.data.model.Breed" />
+            name="breedName"
+            type="String" />
+
+        <variable
+            name="breedOrigin"
+            type="String" />
+
+        <variable
+            name="breedDescription"
+            type="String" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -36,13 +44,44 @@
             android:layout_gravity="center_horizontal|bottom" >
 
             <TextView
-                android:id="@+id/breed_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textSize="20sp"
-                android:text="@{breed.toString()}"
+                android:text="@{breedName}"
+                android:textSize="16sp"
                 tools:text="Breed: Abyssinian" />
+
+            <TextView
+                android:id="@+id/catQuote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{breedOrigin == null ? View.VISIBLE : View.GONE}"
+                android:layout_margin="@dimen/margin"
+                android:text="@string/default_quote"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{breedOrigin != null ? View.VISIBLE : View.GONE}"
+                android:textAlignment="center"
+                android:text="@{breedOrigin}"
+                android:textSize="16sp"
+                tools:text="Origin: Egypt" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{breedDescription != null ? View.VISIBLE : View.GONE}"
+                android:textAlignment="center"
+                android:paddingStart="@dimen/padding"
+                android:paddingEnd="@dimen/padding"
+                android:text="@{breedDescription}"
+                tools:text="The Abyssinian is easy to care for, and a joy to have in your home. They’re affectionate cats and love both people and other animals."
+            />
 
             <TextView
                 android:id="@+id/image_id_text_view"
@@ -50,7 +89,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin"
                 android:textAlignment="center"
-                android:textSize="20sp"
                 android:text="@{imageID}"
                 tools:text="Image ID: 12334" />
 

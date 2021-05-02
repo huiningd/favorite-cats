@@ -90,10 +90,14 @@ class GridViewModel @Inject constructor(
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
                 withContext(Dispatchers.Main) {
-                    emitUiState(loadImagesError = Event(errMessage))
+                    emitUiState(requestError = Event(errMessage))
                 }
             }
         }
+    }
+
+    fun test() {
+        launchGetImagesByBreedJob("amau")
     }
     
     private fun launchGetImagesByBreedJob(breed: String): Job? {
@@ -108,7 +112,7 @@ class GridViewModel @Inject constructor(
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
                 withContext(Dispatchers.Main) {
-                    emitUiState(loadImagesError = Event(errMessage))
+                    emitUiState(requestError = Event(errMessage))
                 }
             }
         }
@@ -144,7 +148,7 @@ class GridViewModel @Inject constructor(
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
                 withContext(Dispatchers.Main) {
-                    emitUiState(getBreedsError = Event(errMessage))
+                    emitUiState(requestError = Event(errMessage))
                 }
             }
         }
@@ -164,7 +168,7 @@ class GridViewModel @Inject constructor(
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
                 withContext(Dispatchers.Main) {
-                    emitUiState(removeFromFavoritesError = Event(errMessage))
+                    emitUiState(requestError = Event(errMessage))
                 }
             }
         }
@@ -172,17 +176,14 @@ class GridViewModel @Inject constructor(
 
     private fun emitUiState(
         loadImagesSuccess: Event<List<Image>>? = null,
-        loadImagesError: Event<String>? = null,
         getBreedsSuccess: Event<List<Breed>>? = null,
-        getBreedsError: Event<String>? = null,
         addToFavoritesSuccess: Event<Pair<String, String>>? = null,
-        addToFavoritesError: Event<String>? = null,
         removeFromFavoritesSuccess: Event<String>? = null,
-        removeFromFavoritesError: Event<String>? = null,
+        requestError: Event<String>? = null,
+        getBreedsError: Event<String>? = null,
     ) {
-        val uiModel = GridUiModel(loadImagesSuccess, loadImagesError, getBreedsSuccess,
-            getBreedsError, addToFavoritesSuccess, addToFavoritesError,
-            removeFromFavoritesSuccess, removeFromFavoritesError)
+        val uiModel = GridUiModel(loadImagesSuccess, getBreedsSuccess,
+            addToFavoritesSuccess, removeFromFavoritesSuccess, requestError, getBreedsError)
         _uiState.value = uiModel
     }
 
@@ -190,11 +191,9 @@ class GridViewModel @Inject constructor(
 
 data class GridUiModel(
     val loadImageListSuccess: Event<List<Image>>?,
-    val loadImageListError: Event<String>?,
     val getBreedsSuccess: Event<List<Breed>>?,
-    val getBreedsError: Event<String>?,
     val addToFavoritesSuccess: Event<Pair<String, String>>?,
-    val addToFavoritesError: Event<String>?,
     val removeFromFavoritesSuccess: Event<String>?,
-    val removeFromFavoritesError: Event<String>?,
+    val requestError: Event<String>?,
+    val getBreedsError: Event<String>?,
 )
