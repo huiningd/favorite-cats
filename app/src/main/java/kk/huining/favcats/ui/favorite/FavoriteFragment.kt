@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kk.huining.favcats.R
 import kk.huining.favcats.di.viewmodel.ViewModelFactory
 import kk.huining.favcats.ui.common.BaseFragment
@@ -31,6 +33,7 @@ class FavoriteFragment : BaseFragment() {
     ): View? {
         viewModel = ViewModelProvider(this, viewModelFactory).get(FavoriteViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_favorite, container, false)
+
         val textView: TextView = root.findViewById(R.id.text_dashboard)
         viewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
@@ -38,7 +41,4 @@ class FavoriteFragment : BaseFragment() {
         return root
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
 }

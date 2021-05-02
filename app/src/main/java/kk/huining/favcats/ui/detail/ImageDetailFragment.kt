@@ -5,11 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kk.huining.favcats.R
+import kk.huining.favcats.SharedViewModel
 import kk.huining.favcats.data.model.Image
 import kk.huining.favcats.databinding.FragmentDetailBinding
 import kk.huining.favcats.di.viewmodel.ViewModelFactory
@@ -21,10 +25,12 @@ class ImageDetailFragment: BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    private val sharedVM: SharedViewModel by activityViewModels()
     private val args: ImageDetailFragmentArgs by navArgs()
 
     private lateinit var viewModel: ImageDetailViewModel
     private lateinit var binding: FragmentDetailBinding
+    private lateinit var imageId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         getPresentationComponent().inject(this)
@@ -38,14 +44,35 @@ class ImageDetailFragment: BaseFragment() {
     ): View? {
         viewModel = ViewModelProvider(this, viewModelFactory).get(ImageDetailViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false)
-        //binding.image = image
         binding.lifecycleOwner = this
-        fetchImageById(args.imageId)
-
+        imageId = args.imageId
+        setupUI()
         return binding.root
     }
 
-    private fun fetchImageById(imageId: String) {
+    private fun setupUI() {
+        binding.imageID = imageId
+        setupFab()
+        getImageDetailInfo()
+        fetchLargeImageById()
+    }
+
+    private fun getImageDetailInfo() {
+        val image = sharedVM.getCachedImage(imageId)
+        val breeds = image?.breeds
+        if (breeds != null && breeds.isNotEmpty()) {
+            binding.breed = breeds[0] // TODO loop list, to string
+        }
+    }
+
+    private fun setupFab() {
+        binding.fab.setOnClickListener { view ->
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+        }
+    }
+
+    private fun fetchLargeImageById() {
         if (isNetworkAvailable()) {
             viewModel.fetchImageById(imageId)
             observeUiState()

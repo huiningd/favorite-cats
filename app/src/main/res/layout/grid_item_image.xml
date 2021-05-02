@@ -25,11 +25,11 @@
             android:contentDescription="@string/cat" />
 
         <ImageView
-            android:id="@+id/favorite_icon"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
+            android:id="@+id/favorite_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="@dimen/margin"
+            android:layout_marginTop="@dimen/margin"
             android:contentDescription="@string/add_to_favorite"
             app:srcCompat="@drawable/ic_favorite_border_24"
             app:layout_constraintBottom_toBottomOf="parent"

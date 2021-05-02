@@ -52,6 +52,50 @@ class CatsRepository @Inject constructor(
         }
     }
 
+    suspend fun addToFavorites(id: String): String {
+        when(val result = remoteDataSource.addToFavorites(id)) {
+            is Result.Success -> {
+                Timber.d("Adding image $id to favorites was successful")
+                Timber.e("result ${result.data}")
+                return result.data
+            }
+            is Result.Error -> throw result.exception
+        }
+    }
+
+    suspend fun getFavorites(): List<Image> {
+        when(val result = remoteDataSource.getFavorites()) {
+            is Result.Success -> {
+                Timber.d("Fetching favorites was successful")
+                Timber.e("result ${result.data}")
+                return result.data
+            }
+            is Result.Error -> throw result.exception
+        }
+    }
+
+    suspend fun getFavoriteImageById(id: String): Image {
+        when(val result = remoteDataSource.getFavoriteById(id)) {
+            is Result.Success -> {
+                Timber.d("Fetching favorite image by ID $id was successful")
+                Timber.e("result ${result.data}")
+                return result.data
+            }
+            is Result.Error -> throw result.exception
+        }
+    }
+
+    suspend fun removeFavoriteImageById(id: String): String {
+        when(val result = remoteDataSource.removeFavoriteById(id)) {
+            is Result.Success -> {
+                Timber.d("Removing favorite image by fav-ID $id was successful")
+                Timber.e("result ${result.data}")
+                return result.data
+            }
+            is Result.Error -> throw result.exception
+        }
+    }
+
     suspend fun getMyUploadedImages(): List<Image> {
         when(val result = remoteDataSource.getUploadedImages()) {
             is Result.Success -> {

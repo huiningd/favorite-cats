@@ -1,7 +1,6 @@
 package kk.huining.favcats.api
 
-import kk.huining.favcats.data.model.Breed
-import kk.huining.favcats.data.model.Image
+import kk.huining.favcats.data.model.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -51,6 +50,18 @@ interface CatsApi {
     @GET("breeds/{id}")
     @Headers("No-Authentication: true")
     suspend fun getBreedById(@Path("id") id: Int): Response<Breed>
+
+    @GET ("favourites")
+    suspend fun getFavourites(): Response<List<Image>>
+
+    @GET("favourites/{id}")
+    suspend fun getFavouriteById(@Path("id") id: String): Response<Image>
+
+    @DELETE("favourites/{id}")
+    suspend fun removeFavouriteById(@Path("id") id: String): Response<DefaultResponse>
+
+    @POST("favourites")
+    suspend fun addToFavourites(@Body body: AddFavRequest): Response<AddToFavoriteResponse>
 
     @GET("images/")
     suspend fun getUploadedImages(): Response<List<Image>>

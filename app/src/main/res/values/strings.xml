@@ -14,9 +14,13 @@
     <string name="network_not_connected">Your device is not connected to the internet. Please resolve connectivity issues and try again.</string>
 
     <string name="err_network_call_time_out">Connection timeout: server is taking too long to reply</string>
-    <string name="add_to_favorite">Add to favorite</string>
+    <string name="err_detail_no_image_id">Cannot go to detail because image ID is missing</string>
+    <string name="err_fav_no_image_id">Cannot add to favorite because image ID is missing</string>
+
     <string name="cat">Cat</string>
     <string name="large_cat_image">large cat image</string>
     <string name="image_id">"Image ID: "</string>
+    <string name="add_to_favorite">Add to favorite</string>
+    <string name="err_failed_add_to_fav">Failed adding image to favorite, please try again later</string>
 
 </resources>
