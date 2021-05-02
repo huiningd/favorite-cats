@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <!--<variable
-            name="gridImage"
-            type="kk.huining.favcats.data.model.Image"/>-->
+        <import type="android.view.View" />
+        <variable
+            name="breedName"
+            type="String"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,26 +18,39 @@
             android:id="@+id/grid_image"
             android:layout_width="@dimen/grid_item_size"
             android:layout_height="@dimen/grid_item_size"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="@dimen/margin_m"
+            android:layout_marginBottom="@dimen/margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/ic_pets_24"
             android:contentDescription="@string/cat" />
 
+        <TextView
+            android:id="@+id/breed_name_text"
+            android:visibility="@{breedName != null ? View.VISIBLE : View.GONE}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="@{breedName}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/grid_image"
+            tools:text="Breed: pretty eyes" />
+
         <ImageView
             android:id="@+id/favorite_button"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/margin"
+            android:padding="@dimen/padding_s"
             android:contentDescription="@string/add_to_favorite"
             app:srcCompat="@drawable/ic_favorite_border_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/grid_image"/>
+            app:layout_constraintTop_toBottomOf="@+id/breed_name_text"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

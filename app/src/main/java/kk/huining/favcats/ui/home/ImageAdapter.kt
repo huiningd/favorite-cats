@@ -63,6 +63,9 @@ class ImageAdapter(
                 .centerCrop()
                 .placeholder(R.drawable.ic_pets_24)
                 .into(binding.gridImage)
+            if (item.breeds.isNotEmpty()) {
+                binding.breedName = item.breeds[0].name
+            }
             if (item.isFavorite) {
                 binding.favoriteButton.setBackgroundResource(R.drawable.ic_favorite_24)
             }

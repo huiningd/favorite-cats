@@ -25,6 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -35,12 +37,13 @@
                 android:padding="@dimen/padding_s"
                 android:layout_marginStart="@dimen/margin"
                 android:layout_marginEnd="0dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
                 android:text="@string/select_a_cat_breed"/>
 
             <Spinner
                 android:id="@+id/breed_spinner"
                 android:layout_gravity="end"
-                android:layout_marginTop="@dimen/margin"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
@@ -51,12 +54,12 @@
             android:id="@+id/image_grid"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/load_more_button"
+            app:layout_constraintBottom_toTopOf="@id/filler"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/breed_selector" />
 
-        <com.google.android.material.button.MaterialButton
+        <!--<com.google.android.material.button.MaterialButton
             android:id="@+id/load_more_button"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
@@ -73,7 +76,7 @@
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@id/filler"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />-->
 
         <View
             android:id="@+id/filler"
