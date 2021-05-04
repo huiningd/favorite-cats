@@ -65,6 +65,12 @@ dependencies {
     // Progress spinner
     implementation "com.tuyenmonkey:mkloader:1.4.0"
 
+    def camerax_version = "1.0.0-beta07" // Note: upgrade to new version may break the camera
+    // CameraX core library using camera2 implementation
+    implementation "androidx.camera:camera-camera2:$camerax_version"
+    implementation "androidx.camera:camera-lifecycle:$camerax_version"
+    implementation "androidx.camera:camera-view:1.0.0-alpha14" // Note: upgrade to new version may break the camera
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

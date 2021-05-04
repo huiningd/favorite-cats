@@ -26,5 +26,8 @@
     <string name="breed_des_s">Description: %s</string>
     <string name="no_breeds">No cat breeds info</string>
     <string name="failed_to_get_breeds">Failed to fetch cat breeds, you will not be able to filter cats by breed</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="open_camera">Open camera</string>
+    <string name="open_gallery">Open gallery</string>
 
 </resources>

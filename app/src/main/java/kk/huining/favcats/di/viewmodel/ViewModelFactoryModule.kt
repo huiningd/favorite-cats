@@ -9,6 +9,7 @@ import kk.huining.favcats.SharedViewModel
 import kk.huining.favcats.ui.detail.ImageDetailViewModel
 import kk.huining.favcats.ui.favorite.FavoriteViewModel
 import kk.huining.favcats.ui.home.GridViewModel
+import kk.huining.favcats.ui.upload.UploadViewModel
 
 
 @Module
@@ -39,6 +40,11 @@ abstract class ViewModelFactoryModule {
     @IntoMap
     @ViewModelKey(ImageDetailViewModel::class)
     internal abstract fun bindImageDetailViewModel(vm: ImageDetailViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UploadViewModel::class)
+    internal abstract fun bindUploadViewModel(vm: UploadViewModel): ViewModel
 
 }
 

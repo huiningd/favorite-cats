@@ -1,6 +1,9 @@
 package kk.huining.favcats
 
+import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -13,6 +16,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import kk.huining.favcats.di.PresentationComponent
 import kk.huining.favcats.di.PresentationModule
+import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -32,19 +37,14 @@ class MainActivity : AppCompatActivity() {
 
         sharedVM = ViewModelProvider(this, viewModelFactory).get(SharedViewModel::class.java)
 
-        val navController = findNavController(R.id.nav_host_fragment)
-        setupActionBar(navController)
-
-        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
-        bottomNav.setupWithNavController(navController)
-
-        /*Set up Action Bar and navigation
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment? ?: return
         val navController = navHost.navController
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.title_screen, R.id.trips_fragment)) // topLevelDestinationIds
-        setupActionBar(navController, appBarConfiguration)
-        addOnDestinationChangedListener(navController, toolbar)*/
+        setupActionBar(navController)
+        addOnDestinationChangedListener(navController, toolbar)
+
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNav.setupWithNavController(navController)
     }
 
     /**
@@ -67,5 +67,30 @@ class MainActivity : AppCompatActivity() {
             .newPresentationComponent(PresentationModule(this))
     }
 
+    private fun addOnDestinationChangedListener(navController: NavController, toolbar: Toolbar) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            /*if (destination.id == R.id.title_screen) {toolbar.visibility = View.GONE
+            } else {toolbar.visibility = View.VISIBLE}*/
+            val dest: String = try {
+                resources.getResourceName(destination.id)
+            } catch (e: Resources.NotFoundException) {
+                destination.id.toString()
+            }
+            Timber.d("Navigated to $dest")
+            if (BuildConfig.DEBUG) Timber.e("##### Navigated to $dest")
+        }
+    }
+
+    companion object {
+
+        /** Use external media if it is available, otherwise use app's file directory */
+        fun getOutputDirectory(context: Context): File {
+            val appContext = context.applicationContext
+            val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
+                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
+            return if (mediaDir != null && mediaDir.exists())
+                mediaDir else appContext.filesDir
+        }
+    }
 
 }

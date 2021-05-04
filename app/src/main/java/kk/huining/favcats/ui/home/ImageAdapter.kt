@@ -63,12 +63,11 @@ class ImageAdapter(
                 .centerCrop()
                 .placeholder(R.drawable.ic_pets_24)
                 .into(binding.gridImage)
-            if (item.breeds.isNotEmpty()) {
-                binding.breedName = item.breeds[0].name
-            }
-            if (item.isFavorite) {
-                binding.favoriteButton.setBackgroundResource(R.drawable.ic_favorite_24)
-            }
+            binding.breedName = if (item.breeds.isNotEmpty()) item.breeds[0].name
+            else "breed unknown"
+            val imageSrc = if (item.isFavorite) R.drawable.ic_favorite_24
+            else R.drawable.ic_favorite_border_24
+            binding.favoriteButton.setBackgroundResource(imageSrc)
             binding.executePendingBindings()
         }
 
@@ -87,8 +86,6 @@ class ImageDiffCallback : DiffUtil.ItemCallback<Image>() {
         return oldItem.id == newItem.id
     }
     override fun areContentsTheSame(oldItem: Image, newItem: Image): Boolean {
-        //Timber.e("oldItem $oldItem, newItem $newItem")
-        //Timber.e("areContentsTheSame ${oldItem == newItem}")
         return oldItem == newItem
     }
 }
