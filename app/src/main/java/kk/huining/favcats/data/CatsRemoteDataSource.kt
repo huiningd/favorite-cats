@@ -99,8 +99,8 @@ class CatsRemoteDataSource @Inject constructor(
         errorMessage = "Unexpected error when fetching my favorite images."
     )
 
-    private suspend fun requestGetFavorites(): Result<List<Image>> {
-        val response: Response<List<Image>> = catsApi.getFavourites()
+    private suspend fun requestGetFavorites(): Result<List<Favorite>> {
+        val response: Response<List<Favorite>> = catsApi.getFavourites()
         return when {
             response.isSuccessful -> {
                 val list = response.body() ?: emptyList()
@@ -141,8 +141,8 @@ class CatsRemoteDataSource @Inject constructor(
         errorMessage = "Unexpected error when adding image to my favorite."
     )
 
-    private suspend fun requestGetFavoritesById(imageId: String): Result<Image> {
-        val response: Response<Image> = catsApi.getFavouriteById(imageId)
+    private suspend fun requestGetFavoritesById(imageId: String): Result<Favorite> {
+        val response: Response<Favorite> = catsApi.getFavouriteById(imageId)
         return when {
             response.isSuccessful -> {
                 val image = response.body()

@@ -52,10 +52,10 @@ interface CatsApi {
     suspend fun getBreedById(@Path("id") id: Int): Response<Breed>
 
     @GET ("favourites")
-    suspend fun getFavourites(): Response<List<Image>>
+    suspend fun getFavourites(): Response<List<Favorite>>
 
     @GET("favourites/{id}")
-    suspend fun getFavouriteById(@Path("id") id: String): Response<Image>
+    suspend fun getFavouriteById(@Path("id") id: String): Response<Favorite>
 
     @DELETE("favourites/{id}")
     suspend fun removeFavouriteById(@Path("id") id: String): Response<DefaultResponse>

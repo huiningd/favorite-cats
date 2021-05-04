@@ -14,4 +14,6 @@ class UploadViewModel@Inject constructor(
         value = "This is notifications Fragment"
     }
     val text: LiveData<String> = _text
+
+
 }

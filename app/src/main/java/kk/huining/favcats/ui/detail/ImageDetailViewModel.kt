@@ -38,19 +38,18 @@ class ImageDetailViewModel @Inject constructor(
     }
 
     private fun launchFetchImageByIdJob(id: String): Job {
-        return viewModelScope.launch(Dispatchers.IO) {
+        val job = "fetch image $id"
+        _isLoading.value = true
+        return viewModelScope.launch {
             try {
                 val res = repository.fetchImageById(id)
-                Timber.d("Login was successful.")
-                withContext(Dispatchers.Main) {
-                    emitUiState(loadImageSuccess = Event(res))
-                }
+                emitUiState(loadImageSuccess = Event(res))
+                _isLoading.value = false
             } catch (e: IOException) {
-                Timber.e(e, "Login failed! error: ${e.message}")
-                val err = e.message ?: "login_failed"
-                withContext(Dispatchers.Main) {
-                    emitUiState(loadImageError = Event(err))
-                }
+                val err = "Failed to $job. error: ${e.message}"
+                Timber.e(e, err)
+                emitUiState(loadImageError = Event(err))
+                _isLoading.value = false
             }
         }
     }

@@ -44,6 +44,7 @@ class ImageDetailFragment: BaseFragment() {
     ): View? {
         viewModel = ViewModelProvider(this, viewModelFactory).get(ImageDetailViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false)
+        binding.viewModel = viewModel
         binding.lifecycleOwner = this
         imageId = args.imageId
         setupUI()

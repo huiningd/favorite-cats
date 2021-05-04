@@ -73,7 +73,7 @@ class CameraFragment: Fragment() {
         // Determine the output directory
         outputDirectory = MainActivity.getOutputDirectory(requireContext())
 
-        // Wait for the views to be properly laid ou
+        // Wait for the views to be properly laid out
         viewFinder.post {
             startCamera()
         }
@@ -115,7 +115,7 @@ class CameraFragment: Fragment() {
                 cameraProvider.unbindAll()
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
-                // enable takePhotoButton
+                // Enable takePhotoButton
                 takePhotoButton.setOnClickListener { takePhoto() }
             } catch(exc: Exception) {
                 Timber.e("Use case binding failed $exc")

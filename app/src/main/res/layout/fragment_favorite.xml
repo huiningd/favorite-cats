@@ -1,22 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingTop="?attr/actionBarSize"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
- 
-    <TextView
-        android:background="@color/design_default_color_error"
-        android:id="@+id/text_dashboard"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="kk.huining.favcats.ui.favorite.FavoriteViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent"
+        android:paddingTop="?attr/actionBarSize" >
+
+        <TextView
+            android:id="@+id/remove_fav_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin"
+            android:paddingBottom="@dimen/padding"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="@string/tap_the_heart_to_remove_from_favorite" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favorite_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toTopOf="@id/filler"
+            app:layout_constraintTop_toBottomOf="@id/remove_fav_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <com.tuyenmonkey.mkloader.MKLoader
+            android:id="@+id/progressBar"
+            android:layout_width="@dimen/progress_loader_size"
+            android:layout_height="@dimen/progress_loader_size"
+            android:layout_gravity="center"
+            android:visibility="@{viewModel.isLoading() ? View.VISIBLE : View.INVISIBLE}"
+            app:mk_color="@color/colorPrimary"
+            app:mk_type="TwinFishesSpinner"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <View
+            android:id="@+id/filler"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -48,10 +48,10 @@ class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel = ViewModelProvider(this, viewModelFactory).get(GridViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_grid, container, false)
-        binding.homeViewModel = viewModel
+        binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
         observeUiState()
@@ -112,10 +112,10 @@ class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         if (isNetworkAvailable()) {
             val msg: String
             if (image.isFavorite) {
-                msg = "Removing from favorites"
+                msg = getString(R.string.removing_fav)
                 viewModel.removeFromFavorites(image.id!!, image.favoriteId!!)
             } else {
-                msg = "Adding to favorites"
+                msg = getString(R.string.adding_fav)
                 viewModel.addToFavorites(image.id!!)
             }
             Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
@@ -231,8 +231,4 @@ class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         // Another interface callback
     }
 
-    override fun onStop() {
-        super.onStop()
-        Timber.e("onStop ")
-    }
 }

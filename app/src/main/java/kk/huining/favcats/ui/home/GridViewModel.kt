@@ -21,11 +21,6 @@ class GridViewModel @Inject constructor(
     private val repository: CatsRepository,
 ): ViewModel() {
 
-    /*private val _imageList = MutableLiveData<List<Image>>().apply {
-        value = emptyList()
-    }
-    val imageList: LiveData<List<Image>> = _imageList*/
-
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean>
         get() = _isLoading
@@ -76,22 +71,20 @@ class GridViewModel @Inject constructor(
     }
 
     private fun launchGetRandomImagesJob(): Job {
+        _isLoading.value = true
         val job = "get random images"
         // The viewModelScope is bound to ViewModel's lifecycle. When LoginViewModel is destroyed,
         // all the asynchronous work that it is doing will be automatically cancelled.
-        return viewModelScope.launch(Dispatchers.IO) {
-            Timber.d("Starting ...")
+        return viewModelScope.launch {
             try {
                 val res = repository.getRandomImages()
-                withContext(Dispatchers.Main) {
-                    emitUiState(loadImagesSuccess = Event(res))
-                }
+                emitUiState(loadImagesSuccess = Event(res))
+                _isLoading.value = false
             } catch (e: IOException) {
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
-                withContext(Dispatchers.Main) {
-                    emitUiState(requestError = Event(errMessage))
-                }
+                emitUiState(requestError = Event(errMessage))
+                _isLoading.value = false
             }
         }
     }
@@ -101,75 +94,62 @@ class GridViewModel @Inject constructor(
     }
     
     private fun launchGetImagesByBreedJob(breed: String): Job? {
+        _isLoading.value = true
         val job = "get images by breed $breed"
-        return viewModelScope.launch(Dispatchers.IO) {
+        return viewModelScope.launch {
             try {
                 val res = repository.getImagesByBreed(breed)
-                withContext(Dispatchers.Main) {
-                    emitUiState(loadImagesSuccess = Event(res))
-                }
+                emitUiState(loadImagesSuccess = Event(res))
+                _isLoading.value = false
             } catch (e: IOException) {
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
-                withContext(Dispatchers.Main) {
-                    emitUiState(requestError = Event(errMessage))
-                }
+                emitUiState(requestError = Event(errMessage))
+                _isLoading.value = false
             }
         }
     }
 
     private fun launchGetBreedsJob(): Job {
         val job = "get breeds"
-        return viewModelScope.launch(Dispatchers.IO) {
+        return viewModelScope.launch {
             try {
                 val res = repository.getBreeds()
-                withContext(Dispatchers.Main) {
-                    emitUiState(getBreedsSuccess = Event(res))
-                }
+                emitUiState(getBreedsSuccess = Event(res))
             } catch (e: IOException) {
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
-                withContext(Dispatchers.Main) {
-                    emitUiState(getBreedsError = Event(errMessage))
-                }
+                emitUiState(getBreedsError = Event(errMessage))
             }
         }
     }
 
     private fun launchAddToFavoritesJob(imageId: String): Job? {
         val job = "add image with ID $imageId to favorites"
-        return viewModelScope.launch(Dispatchers.IO) {
+        return viewModelScope.launch {
             try {
                 val favoriteId = repository.addToFavorites(imageId)
-                withContext(Dispatchers.Main) {
-                    emitUiState(addToFavoritesSuccess = Event(Pair(first = imageId, second = favoriteId)))
-                }
+                emitUiState(addToFavoritesSuccess = Event(Pair(first = imageId, second = favoriteId)))
             } catch (e: IOException) {
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
-                withContext(Dispatchers.Main) {
-                    emitUiState(requestError = Event(errMessage))
-                }
+                emitUiState(requestError = Event(errMessage))
             }
         }
     }
 
     private fun launchRemoveFromFavoritesJob(imageId: String, favId: String): Job? {
         val job = "remove image with fav-ID $favId from favorites"
-        return viewModelScope.launch(Dispatchers.IO) {
+        return viewModelScope.launch {
             try {
                 val res = repository.removeFavoriteImageById(favId)
                 if (res == "SUCCESS") {
-                    withContext(Dispatchers.Main) {
-                        emitUiState(removeFromFavoritesSuccess = Event(imageId))
-                    }
+                    emitUiState(removeFromFavoritesSuccess = Event(imageId))
                 }
             } catch (e: IOException) {
                 val errMessage = "Failed to $job! error: ${e.message}"
                 Timber.e(e, errMessage)
-                withContext(Dispatchers.Main) {
-                    emitUiState(requestError = Event(errMessage))
-                }
+                emitUiState(requestError = Event(errMessage))
             }
         }
     }

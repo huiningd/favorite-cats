@@ -10,9 +10,6 @@ data class Image(
     var width: Int? = null,
     var height: Int? = null,
     var mime_type: String? = null,
-    //var entities: List,
-    //var animals: List,
-    //var categories: List,
     val breeds: List<Breed> = emptyList(),
     var favoriteId: String? = null,
 ) {
@@ -21,4 +18,12 @@ data class Image(
 }
 
 
-
+@JsonClass(generateAdapter = true)
+data class Favorite(
+    var id: String? = null,
+    var user_id: String? = null,
+    var image_id: String? = null,
+    var sub_id: String? = null,
+    var created_at: String? = null, //  "2021-04-20T13:34:56.000Z",
+    var image: Image? = null
+)

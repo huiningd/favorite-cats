@@ -13,7 +13,7 @@
     <dimen name="padding_l">32dp</dimen>
 
     <dimen name="grid_item_size">100dp</dimen>
-    <dimen name="loader_size">56dp</dimen>
+    <dimen name="progress_loader_size">56dp</dimen>
     <dimen name="icon_size">24dp</dimen>
 
 </resources>

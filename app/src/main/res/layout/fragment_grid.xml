@@ -11,7 +11,7 @@
         <import type="android.view.View" />
 
         <variable
-            name="homeViewModel"
+            name="viewModel"
             type="kk.huining.favcats.ui.home.GridViewModel" />
     </data>
 
@@ -59,24 +59,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/breed_selector" />
 
-        <!--<com.google.android.material.button.MaterialButton
-            android:id="@+id/load_more_button"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="@dimen/margin"
-            android:enabled="@{!homeViewModel.isLoading}"
-            android:onClick="@{() -> homeViewModel.test()}"
-            android:paddingLeft="@dimen/padding_l"
-            android:paddingRight="@dimen/padding_l"
-            android:text="@string/load_more"
-            android:textAllCaps="false"
-            android:textColor="@color/colorAccent"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@id/filler"
+        <com.tuyenmonkey.mkloader.MKLoader
+            android:id="@+id/progressBar"
+            android:layout_width="@dimen/progress_loader_size"
+            android:layout_height="@dimen/progress_loader_size"
+            android:layout_gravity="center"
+            android:visibility="@{viewModel.isLoading() ? View.VISIBLE : View.INVISIBLE}"
+            app:mk_color="@color/colorPrimary"
+            app:mk_type="TwinFishesSpinner"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />-->
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <View
             android:id="@+id/filler"
