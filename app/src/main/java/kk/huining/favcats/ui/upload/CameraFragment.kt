@@ -1,38 +1,27 @@
 package kk.huining.favcats.ui.upload
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.hardware.display.DisplayManager
-import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import kk.huining.favcats.MainActivity
 import kk.huining.favcats.R
 import kk.huining.favcats.ui.upload.CameraFragmentDirections.Companion.actionCameraToPermission
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kk.huining.favcats.ui.upload.CameraFragmentDirections.Companion.actionCameraToUpload
 import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
@@ -148,11 +137,17 @@ class CameraFragment: Fragment() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
                     val msg = "Photo capture succeeded: $savedUri"
-                    //Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
                     Timber.e(msg)
-                    // todo: popback
+                    popBackToUploadScreen(savedUri)
                 }
             })
+    }
+
+    private fun popBackToUploadScreen(savedUri: Uri) {
+        setFragmentResult(CAMERA_FRAGMENT_RESULT_KEY,
+            bundleOf(IMAGE_PATH to savedUri.toString()))
+        findNavController().navigate(actionCameraToUpload())
     }
 
     override fun onDestroy() {
@@ -162,6 +157,8 @@ class CameraFragment: Fragment() {
 
     companion object {
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        const val CAMERA_FRAGMENT_RESULT_KEY = "CAMERA_FRAGMENT_RESULT_KEY"
+        const val IMAGE_PATH = "capturedImageLocation"
     }
 
 }

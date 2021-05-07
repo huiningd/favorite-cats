@@ -3,6 +3,7 @@ package kk.huining.favcats
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kk.huining.favcats.data.model.Breed
+import kk.huining.favcats.data.model.Favorite
 import kk.huining.favcats.data.model.Image
 import timber.log.Timber
 import javax.inject.Inject
@@ -14,11 +15,28 @@ class SharedViewModel @Inject constructor(
 
     val cachedSmallImages: MutableLiveData<List<Image>> = MutableLiveData(emptyList())
     val cachedBreeds: MutableLiveData<List<Breed>> = MutableLiveData(emptyList())
+    val cachedMyUploads: MutableLiveData<List<Image>> = MutableLiveData(emptyList())
+    val cachedFavorites: MutableLiveData<List<Favorite>> = MutableLiveData(emptyList())
     var selectedBreedPosition: Int = 0 // default to 0
 
-    fun cacheSmallImages(images: List<Image>) {
+    fun cacheFavorites(favs: List<Favorite>) {
+        cachedFavorites.value = favs
+        Timber.e("cacheFavorites ${favs.size}")
+    }
+    fun cacheImagesWithFav(images: List<Image>) {
+        val favs = cachedFavorites.value
+        // Mark images favorite by saving favoriteId
+        if (favs != null && favs.isNotEmpty()) {
+            val hashMap: HashMap<String?, String?> = HashMap()
+            favs.forEach { hashMap[it.image_id] = it.id } // key is image id, value is fav id.
+            val favImageIds = favs.map { it.image_id }
+            images.forEach { image ->
+                if (favImageIds.contains(image.id))
+                    image.favoriteId = hashMap[image.id]
+            }
+        }
         cachedSmallImages.value = images
-        Timber.e("cacheImages ${images.size}")
+        Timber.d("cacheImages ${images.size}")
     }
 
     fun clearCachedSmallImages() {
@@ -27,13 +45,18 @@ class SharedViewModel @Inject constructor(
 
     fun cacheBreeds(breeds: List<Breed>) {
         cachedBreeds.value = breeds
-        Timber.e("##### cacheBreeds ${breeds.size}")
+        Timber.d("cacheBreeds ${breeds.size}")
+    }
+
+    fun cacheMyUploads(images: List<Image>) {
+        cachedMyUploads.value = images
+        Timber.d("cachedMyUploads ${images.size}")
     }
 
     fun addToCachedSmallImages(tmp: Image) {
         val cached = cachedSmallImages.value?.toMutableList()
         cached?.add(tmp)
-        cached?.let { cacheSmallImages(cached) }
+        cached?.let { cacheImagesWithFav(cached) }
     }
 
     fun toggleImageFavorite(imageId: String, favoriteId: String? = null) {

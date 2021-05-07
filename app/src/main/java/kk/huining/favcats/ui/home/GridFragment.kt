@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import kk.huining.favcats.R
 import kk.huining.favcats.SharedViewModel
 import kk.huining.favcats.data.model.Breed
+import kk.huining.favcats.data.model.Favorite
 import kk.huining.favcats.data.model.Image
 import kk.huining.favcats.databinding.FragmentGridBinding
 import kk.huining.favcats.di.viewmodel.ViewModelFactory
@@ -84,7 +85,7 @@ class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
             if (list.isEmpty()) {
                 fetchMore()
             } else {
-                Timber.e("##### submitList ${list.size}")
+                Timber.d("submitList ${list.size}")
                 imageAdapter?.submitList(list as MutableList<Image>?)
             }
         })
@@ -98,7 +99,8 @@ class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     private fun fetchMore() {
         if (isNetworkAvailable()) {
-            viewModel.getRandomImages()
+            // App starting, get some random images and favorites
+            viewModel.fetchInitData()
         }
     }
 
@@ -152,6 +154,9 @@ class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
             if (uiModel.removeFromFavoritesSuccess != null && !uiModel.removeFromFavoritesSuccess.consumed) {
                 uiModel.removeFromFavoritesSuccess.consume()?.let { res -> handleRemoveFromFavoritesSuccess(res) }
             }
+            if (uiModel.initDataSuccess != null && !uiModel.initDataSuccess.consumed) {
+                uiModel.initDataSuccess.consume()?.let { res -> handleInitDataSuccess(res) }
+            }
         })
     }
 
@@ -168,20 +173,26 @@ class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun handleGetBreedsSuccess(breeds: List<Breed>) {
-        //Timber.d("handleGetBreedsSuccess ${breeds.size}") // 67
         val mutableList = breeds.toMutableList()
         mutableList.add(0, Breed(name = "No breed")) // add 'no breed' as the 1st element
         sharedVM.cacheBreeds(mutableList.toList()) // observer will update UI
     }
 
     private fun handleLoadImageSuccess(images: List<Image>) {
-        sharedVM.cacheSmallImages(images) // observer will update UI
+        sharedVM.cacheImagesWithFav(images) // observer will update UI
     }
 
     private fun handleGetBreedsError() {
         binding.breedSelectorTitle.text = getString(R.string.no_breeds)
         binding.breedSpinner.visibility = View.GONE
         showInfoDialog(R.string.failed_to_get_breeds, "ErrorDialog")
+    }
+
+    private fun handleInitDataSuccess(res: Pair<List<Image>, List<Favorite>>) {
+        val images = res.first
+        val favorites = res.second
+        sharedVM.cacheFavorites(favorites)
+        sharedVM.cacheImagesWithFav(images)
     }
 
     private fun handleError(msg: String) {
@@ -213,7 +224,7 @@ class GridFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-        val selectedBreedName: String? = parent.getItemAtPosition(pos).toString()
+        val selectedBreedName: String = parent.getItemAtPosition(pos).toString()
         //Toast.makeText(requireContext(), "$selectedBreedName", Toast.LENGTH_SHORT).show()
         // Only fetch from remote if user selected different breed
         if (pos != sharedVM.selectedBreedPosition && isNetworkAvailable()) {

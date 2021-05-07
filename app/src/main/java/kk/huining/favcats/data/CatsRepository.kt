@@ -3,8 +3,14 @@ package kk.huining.favcats.data
 import kk.huining.favcats.data.model.Breed
 import kk.huining.favcats.data.model.Favorite
 import kk.huining.favcats.data.model.Image
+import kk.huining.favcats.data.model.UploadImageResponse
+import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType
 import timber.log.Timber
+import java.io.File
+import java.io.IOException
 import javax.inject.Inject
 
 class CatsRepository @Inject constructor(
@@ -118,6 +124,41 @@ class CatsRepository @Inject constructor(
                 }
                 is Result.Error -> throw result.exception
             }
+        }
+    }
+
+    suspend fun uploadFile(fileToUpload: File, contentType: MediaType): UploadImageResponse {
+        return withContext(dispatcherProvider.io) {
+            when (val result = remoteDataSource.uploadImageFile(fileToUpload, contentType)) {
+                is Result.Success -> {
+                    Timber.d("Upload image file was successful")
+                    result.data
+                }
+                is Result.Error -> throw result.exception
+            }
+        }
+    }
+
+    // A supervisorScope won’t cancel other children when one of them fails.
+    suspend fun fetchRandomImagesAndFavorites(): Pair<List<Image>, List<Favorite>> = supervisorScope {
+        // fetch in parallel
+        val getRandomImages = async { remoteDataSource.getRandomImages() }
+        val getFavorites = async { remoteDataSource.getFavorites() }
+        try {
+            val imagesRes = getRandomImages.await()
+            val favRes = getFavorites.await()
+            when {
+                imagesRes is Result.Success && favRes is Result.Success -> {
+                    val images: List<Image> = imagesRes.data
+                    val favs: List<Favorite> = favRes.data
+                    return@supervisorScope Pair(first = images, second = favs)
+                }
+                imagesRes is Result.Error -> throw imagesRes.exception
+                favRes is Result.Error -> throw favRes.exception
+                else -> throw IOException("Unexpected error in fetchRandomImagesAndFavorites()")
+            }
+        } catch (e: Throwable) {
+            throw IOException(e.message)
         }
     }
 }

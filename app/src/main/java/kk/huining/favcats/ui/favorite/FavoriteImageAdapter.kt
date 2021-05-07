@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import kk.huining.favcats.R
 import kk.huining.favcats.data.model.Favorite
 import kk.huining.favcats.databinding.ListItemFavoriteBinding
+import kk.huining.favcats.utils.getFormattedDateTimeInLocal
 import timber.log.Timber
 
 
@@ -63,8 +64,7 @@ class FavoriteImageAdapter(
                     .placeholder(R.drawable.ic_pets_24)
                     .into(binding.favoriteImage)
             }
-            // TODO get sub_id, created date
-            //binding.breedName = if (item.breeds.isNotEmpty()) item.breeds[0].name
+            binding.favImageInfo = "created at ${getFormattedDateTimeInLocal(item.created_at)}"
             binding.executePendingBindings()
         }
 

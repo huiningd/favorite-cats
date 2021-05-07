@@ -2,11 +2,19 @@ package kk.huining.favcats.data
 
 import kk.huining.favcats.api.CatsApi
 import kk.huining.favcats.data.model.*
+import kk.huining.favcats.utils.extractServerErrorMessage
 import kk.huining.favcats.utils.safeApiCall
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.MultipartBody.Part.Companion.createFormData
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
 import timber.log.Timber
+import java.io.File
 import java.io.IOException
 import javax.inject.Inject
+
 
 class CatsRemoteDataSource @Inject constructor(
     private val catsApi: CatsApi
@@ -121,7 +129,7 @@ class CatsRemoteDataSource @Inject constructor(
 
     private suspend fun requestAddToFavorites(imageId: String): Result<String> {
         val response: Response<AddToFavoriteResponse> =
-            catsApi.addToFavourites(AddFavRequest(image_id = imageId))
+            catsApi.addToFavourites(AddToFavoriteRequest(image_id = imageId))
         return when {
             response.isSuccessful -> {
                 val favoriteId = response.body()?.id
@@ -191,6 +199,31 @@ class CatsRemoteDataSource @Inject constructor(
             else -> {
                 // Example response {"message":"INVALID_ACCOUNT","status":400,"level":"info"}
                 val errMessage = "${response.code()} ${response.raw()}"
+                Timber.e(errMessage)
+                Timber.e("$response")
+                Result.Error(IOException(errMessage))
+            }
+        }
+    }
+
+    suspend fun uploadImageFile(fileToUpload: File, contentType: MediaType) = safeApiCall(
+        call = { requestUploadFile(fileToUpload, contentType) },
+        errorMessage = "Unexpected error when fetching my uploaded images."
+    )
+
+    private suspend fun requestUploadFile(fileToUpload: File, contentType: MediaType): Result<UploadImageResponse> {
+        val requestFile: RequestBody = fileToUpload.asRequestBody(contentType)
+        val body: MultipartBody.Part = createFormData("file", fileToUpload.name, requestFile)
+
+        val response : Response<UploadImageResponse> = catsApi.uploadImage(body)
+        return when {
+            response.isSuccessful -> {
+                val res = response.body()
+                if (res != null) Result.Success(res)
+                else Result.Error(IOException("UploadImageResponse is null!"))
+            }
+            else -> {
+                val errMessage = extractServerErrorMessage(response.errorBody()) ?: "Unknown"
                 Timber.e(errMessage)
                 Timber.e("$response")
                 Result.Error(IOException(errMessage))

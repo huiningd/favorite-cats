@@ -31,6 +31,7 @@ class ImageDetailFragment: BaseFragment() {
     private lateinit var viewModel: ImageDetailViewModel
     private lateinit var binding: FragmentDetailBinding
     private lateinit var imageId: String
+    private var image: Image? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         getPresentationComponent().inject(this)
@@ -41,7 +42,7 @@ class ImageDetailFragment: BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel = ViewModelProvider(this, viewModelFactory).get(ImageDetailViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false)
         binding.viewModel = viewModel
@@ -53,13 +54,14 @@ class ImageDetailFragment: BaseFragment() {
 
     private fun setupUI() {
         binding.imageID = getString(R.string.image_id_s, imageId)
-        setupFab()
+        setupFabOnClickListener()
         getImageDetailInfo()
         fetchLargeImageById()
     }
 
     private fun getImageDetailInfo() {
-        val image = sharedVM.getCachedImage(imageId)
+        image = sharedVM.getCachedImage(imageId)
+        updateFabIcon()
         val breeds = image?.breeds
         if (breeds != null && breeds.isNotEmpty()) {
             val breed = breeds[0] // TODO loop list, to string
@@ -71,10 +73,21 @@ class ImageDetailFragment: BaseFragment() {
         }
     }
 
-    private fun setupFab() {
+    private fun setupFabOnClickListener() {
         binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            image?.let {
+                if (isNetworkAvailable()) {
+                    val msg: String
+                    if (it.isFavorite) {
+                        msg = getString(R.string.removing_fav)
+                        viewModel.removeFromFavorites(it.id!!, it.favoriteId!!)
+                    } else {
+                        msg = getString(R.string.adding_fav)
+                        viewModel.addToFavorites(it.id!!)
+                    }
+                    Snackbar.make(view, msg, Snackbar.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -88,13 +101,17 @@ class ImageDetailFragment: BaseFragment() {
     private fun observeUiState() {
         viewModel.uiState.observe(viewLifecycleOwner, Observer {
             val uiModel = it ?: return@Observer
-
-            if (uiModel.loadImageError != null && !uiModel.loadImageError.consumed) {
-                uiModel.loadImageError.consume()?.let { msg -> handleLoadImageError(msg) }
+            if (uiModel.requestError != null && !uiModel.requestError.consumed) {
+                uiModel.requestError.consume()?.let { msg -> handleError(msg) }
             }
-
             if (uiModel.loadImageSuccess != null && !uiModel.loadImageSuccess.consumed) {
                 uiModel.loadImageSuccess.consume()?.let { res -> handleLoadImageSuccess(res) }
+            }
+            if (uiModel.addToFavoritesSuccess != null && !uiModel.addToFavoritesSuccess.consumed) {
+                uiModel.addToFavoritesSuccess.consume()?.let { res -> handleAddToFavoritesSuccess(res) }
+            }
+            if (uiModel.removeFromFavoritesSuccess != null && !uiModel.removeFromFavoritesSuccess.consumed) {
+                uiModel.removeFromFavoritesSuccess.consume()?.let { res -> handleRemoveFromFavoritesSuccess(res) }
             }
         })
     }
@@ -107,8 +124,28 @@ class ImageDetailFragment: BaseFragment() {
             .into(binding.imageView)
     }
 
-    private fun handleLoadImageError(msg: String) {
+    private fun handleAddToFavoritesSuccess(favoriteId: String) {
+        image?.favoriteId = favoriteId
+        sharedVM.toggleImageFavorite(imageId, favoriteId)
+        updateFabIcon()
+    }
+
+    private fun handleRemoveFromFavoritesSuccess(res: String) {
+        image?.favoriteId = null
+        sharedVM.toggleImageFavorite(imageId, null)
+        updateFabIcon()
+    }
+
+    private fun handleError(msg: String) {
         showInfoDialog(msg, "ErrorDialog")
+    }
+
+    private fun updateFabIcon() {
+        if (image?.isFavorite == true) {
+            binding.fab.setImageResource(R.drawable.ic_favorite_24)
+        } else {
+            binding.fab.setImageResource(R.drawable.ic_favorite_border_24)
+        }
     }
 
 }

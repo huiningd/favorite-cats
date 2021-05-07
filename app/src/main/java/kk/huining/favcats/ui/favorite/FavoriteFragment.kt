@@ -32,7 +32,6 @@ class FavoriteFragment : BaseFragment() {
     private lateinit var binding: FragmentFavoriteBinding
 
     private var imageAdapter: FavoriteImageAdapter? = null
-    //private var favoritesLocalCache: List<Favorite> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         getPresentationComponent().inject(this)
@@ -92,9 +91,7 @@ class FavoriteFragment : BaseFragment() {
     }
 
     private fun handleGetFavsSuccess(list: List<Favorite>) {
-        Timber.e("##### fav submitList ${list.size}")
         imageAdapter?.submitList(list as MutableList<Favorite>?)
-        //favoritesLocalCache = list
     }
 
     private fun handleRemoveFavSuccess(position: Int) {
@@ -107,7 +104,7 @@ class FavoriteFragment : BaseFragment() {
     }
 
     private fun onImageClicked(fav: Favorite) {
-        // do nothing now
+        // do nothing now TODO open in dialogfragment
     }
 
     private fun removeFromFavorite(favorite: Favorite, position: Int) {

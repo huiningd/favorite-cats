@@ -28,6 +28,8 @@ class ImageDetailViewModel @Inject constructor(
     val uiState: LiveData<ImageDetailUiModel> = _uiState
 
     private var fetchImageByIdJob: Job? = null
+    private var addToFavoritesJob: Job? = null
+    private var removeFromFavoritesJob: Job? = null
 
     fun fetchImageById(id: String) {
         // only allow one login job at a time
@@ -35,6 +37,20 @@ class ImageDetailViewModel @Inject constructor(
             return
         }
         fetchImageByIdJob = launchFetchImageByIdJob(id)
+    }
+
+    fun addToFavorites(imageId: String) {
+        if (addToFavoritesJob?.isActive == true) {
+            return
+        }
+        addToFavoritesJob = launchAddToFavoritesJob(imageId)
+    }
+
+    fun removeFromFavorites(imageId: String, favId: String) {
+        if (removeFromFavoritesJob?.isActive == true) {
+            return
+        }
+        removeFromFavoritesJob = launchRemoveFromFavoritesJob(imageId, favId)
     }
 
     private fun launchFetchImageByIdJob(id: String): Job {
@@ -48,23 +64,58 @@ class ImageDetailViewModel @Inject constructor(
             } catch (e: IOException) {
                 val err = "Failed to $job. error: ${e.message}"
                 Timber.e(e, err)
-                emitUiState(loadImageError = Event(err))
+                emitUiState(requestError = Event(err))
                 _isLoading.value = false
             }
         }
     }
 
+    private fun launchAddToFavoritesJob(imageId: String): Job {
+        val job = "add image with ID $imageId to favorites"
+        return viewModelScope.launch {
+            try {
+                val favoriteId = repository.addToFavorites(imageId)
+                emitUiState(addToFavoritesSuccess = Event(favoriteId))
+            } catch (e: IOException) {
+                val errMessage = "Failed to $job! error: ${e.message}"
+                Timber.e(e, errMessage)
+                emitUiState(requestError = Event(errMessage))
+            }
+        }
+    }
+
+    private fun launchRemoveFromFavoritesJob(imageId: String, favId: String): Job {
+        val job = "remove image with fav-ID $favId from favorites"
+        return viewModelScope.launch {
+            try {
+                val res = repository.removeFavoriteImageById(favId)
+                if (res == "SUCCESS") {
+                    emitUiState(removeFromFavoritesSuccess = Event(imageId))
+                }
+            } catch (e: IOException) {
+                val errMessage = "Failed to $job! error: ${e.message}"
+                Timber.e(e, errMessage)
+                emitUiState(requestError = Event(errMessage))
+            }
+        }
+    }
+
     private fun emitUiState(
-        loadImageError: Event<String>? = null,
+        requestError: Event<String>? = null,
         loadImageSuccess: Event<Image>? = null,
+        addToFavoritesSuccess: Event<String>? = null,
+        removeFromFavoritesSuccess: Event<String>? = null
     ) {
-        val uiModel = ImageDetailUiModel(loadImageError, loadImageSuccess)
+        val uiModel = ImageDetailUiModel(requestError, loadImageSuccess,
+            addToFavoritesSuccess, removeFromFavoritesSuccess)
         _uiState.value = uiModel
     }
 
 }
 
 data class ImageDetailUiModel(
-    val loadImageError: Event<String>?,
-    val loadImageSuccess: Event<Image>?
+    val requestError: Event<String>?,
+    val loadImageSuccess: Event<Image>?,
+    val addToFavoritesSuccess: Event<String>?,
+    val removeFromFavoritesSuccess: Event<String>?,
 )

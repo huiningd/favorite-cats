@@ -67,6 +67,14 @@ class MainActivity : AppCompatActivity() {
             .newPresentationComponent(PresentationModule(this))
     }
 
+    /**
+     * Overwrite onSupportNavigateUp for handling navigateUp (top-left back button)
+     */
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
     private fun addOnDestinationChangedListener(navController: NavController, toolbar: Toolbar) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             /*if (destination.id == R.id.title_screen) {toolbar.visibility = View.GONE

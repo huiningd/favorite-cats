@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kk.huining.favcats.data.CatsRepository
 import kk.huining.favcats.data.model.Breed
+import kk.huining.favcats.data.model.Favorite
 import kk.huining.favcats.data.model.Image
 import kk.huining.favcats.utils.Event
 import kotlinx.coroutines.Dispatchers
@@ -88,10 +89,6 @@ class GridViewModel @Inject constructor(
             }
         }
     }
-
-    fun test() {
-        launchGetImagesByBreedJob("amau")
-    }
     
     private fun launchGetImagesByBreedJob(breed: String): Job? {
         _isLoading.value = true
@@ -124,7 +121,7 @@ class GridViewModel @Inject constructor(
         }
     }
 
-    private fun launchAddToFavoritesJob(imageId: String): Job? {
+    private fun launchAddToFavoritesJob(imageId: String): Job {
         val job = "add image with ID $imageId to favorites"
         return viewModelScope.launch {
             try {
@@ -138,7 +135,7 @@ class GridViewModel @Inject constructor(
         }
     }
 
-    private fun launchRemoveFromFavoritesJob(imageId: String, favId: String): Job? {
+    private fun launchRemoveFromFavoritesJob(imageId: String, favId: String): Job {
         val job = "remove image with fav-ID $favId from favorites"
         return viewModelScope.launch {
             try {
@@ -154,16 +151,32 @@ class GridViewModel @Inject constructor(
         }
     }
 
+    fun fetchInitData(): Job {
+        val job = "Init data (fetch random images and favorites)"
+        return viewModelScope.launch {
+            try {
+                val res = repository.fetchRandomImagesAndFavorites()
+                emitUiState(initDataSuccess = Event(res))
+            } catch (e: IOException) {
+                val errMessage = "Failed to $job! error: ${e.message}"
+                Timber.e(e, errMessage)
+                emitUiState(requestError = Event(errMessage))
+            }
+        }
+    }
+
     private fun emitUiState(
         loadImagesSuccess: Event<List<Image>>? = null,
         getBreedsSuccess: Event<List<Breed>>? = null,
         addToFavoritesSuccess: Event<Pair<String, String>>? = null,
         removeFromFavoritesSuccess: Event<String>? = null,
+        initDataSuccess: Event<Pair<List<Image>, List<Favorite>>>? = null,
         requestError: Event<String>? = null,
         getBreedsError: Event<String>? = null,
     ) {
         val uiModel = GridUiModel(loadImagesSuccess, getBreedsSuccess,
-            addToFavoritesSuccess, removeFromFavoritesSuccess, requestError, getBreedsError)
+            addToFavoritesSuccess, removeFromFavoritesSuccess, initDataSuccess,
+            requestError, getBreedsError)
         _uiState.value = uiModel
     }
 
@@ -174,6 +187,7 @@ data class GridUiModel(
     val getBreedsSuccess: Event<List<Breed>>?,
     val addToFavoritesSuccess: Event<Pair<String, String>>?,
     val removeFromFavoritesSuccess: Event<String>?,
+    val initDataSuccess: Event<Pair<List<Image>, List<Favorite>>>?,
     val requestError: Event<String>?,
-    val getBreedsError: Event<String>?,
+    val getBreedsError: Event<String>?
 )

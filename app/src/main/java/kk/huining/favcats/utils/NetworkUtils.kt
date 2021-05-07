@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import kk.huining.favcats.BuildConfig
 import kk.huining.favcats.R
 import okhttp3.ResponseBody
@@ -12,6 +14,7 @@ import java.io.IOException
 import java.lang.Exception
 import java.net.SocketTimeoutException
 import kk.huining.favcats.data.Result
+import kk.huining.favcats.data.model.ServerErrorResponse
 
 
 const val TIME_OUT = "time_out"
@@ -52,6 +55,28 @@ fun checkIsNetworkAvailable(activity: Activity?): Boolean {
         activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
         else -> false
     }
+}
+
+fun extractServerErrorMessage(resBody: ResponseBody?): String? {
+    // Note: resBody.string() can only be called once, the content is streamed out and becomes empty
+    val str = resBody?.string()
+    if (!str.isNullOrBlank()) {
+        val moshi = Moshi.Builder().build()
+        val jsonAdapter: JsonAdapter<ServerErrorResponse> =
+            moshi.adapter(ServerErrorResponse::class.java).lenient()
+        return if (str.contains("message")) {
+            try {
+                val errorResponse = jsonAdapter.fromJson(str)
+                errorResponse?.message
+            } catch (e: Exception) {
+                Timber.e(e, "extractUploadErrorMessage: failed to parse ResponseBody [$str] ")
+                null
+            }
+        } else {
+            str // returns the ResponseBody.string directly
+        }
+    }
+    return null
 }
 
 fun mapErrorCode(err: String): Int? {

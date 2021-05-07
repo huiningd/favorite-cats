@@ -27,12 +27,15 @@
     <string name="no_breeds">No cat breeds info</string>
     <string name="failed_to_get_breeds">Failed to fetch cat breeds, you will not be able to filter cats by breed</string>
     <string name="take_photo">Take Photo</string>
-    <string name="open_camera">Open camera</string>
-    <string name="open_gallery">Open gallery</string>
+    <string name="open_camera">Camera</string>
+    <string name="open_gallery">Gallery</string>
     <string name="favorite_image">favorite image</string>
     <string name="remove_from_favorite">Remove from favorite</string>
     <string name="tap_the_heart_to_remove_from_favorite">Tap the heart to remove from favorites</string>
     <string name="removing_fav">Removing from favorites</string>
     <string name="adding_fav">Adding to favorites</string>
+    <string name="upload_screen_info">Upload your cat image from gallery, or take a photo with camera then upload</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="upload_button">Upload</string>
 
 </resources>

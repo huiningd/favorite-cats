@@ -1,6 +1,8 @@
 package kk.huining.favcats.api
 
 import kk.huining.favcats.data.model.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -11,14 +13,9 @@ import retrofit2.http.*
 interface CatsApi {
 
     /**
-     * Search for images.
-     *
+     * Fetch random images in small size.
      * Other optional queries can be used are:
-     * mime_types 	optional 	Comma delimited string of the image types to return gif, jpg, orpng. Defaults to return all types jpg,gif,png.
-     * format 	optional 	Response format json, or src. src will redirect straight to the image, so is useful for putting a link straight into HTML as the 'src' on an 'img' tag. Defaults to json
-     * order 	optional 	The order to return results in. RANDOM, ASC or DESC. If either ASC or DESC is passed then the Pagination headers will be on the response allowing you to see the total amount of results, and your current page. Default is RANDOM
-     * page 	optional 	Integer - used for Paginating through all the results. Only used when order is ASC or DESC
-     * has_breeds 	optional 	Only return images which have breed data attached. Integer - 0 or 1. Default is 0
+     * mime_types, format, order, page, has_breeds, category_ids
      */
     @GET("images/search")
     suspend fun getRandomImagesSmall(
@@ -61,10 +58,12 @@ interface CatsApi {
     suspend fun removeFavouriteById(@Path("id") id: String): Response<DefaultResponse>
 
     @POST("favourites")
-    suspend fun addToFavourites(@Body body: AddFavRequest): Response<AddToFavoriteResponse>
+    suspend fun addToFavourites(@Body body: AddToFavoriteRequest): Response<AddToFavoriteResponse>
 
     @GET("images/")
-    suspend fun getUploadedImages(): Response<List<Image>>
+    suspend fun getUploadedImages(
+        @Query("limit") limit: Int = 20,
+    ): Response<List<Image>>
 
     @GET("images/{id}")
     suspend fun getImageById(@Path("id") id: String): Response<Image>
@@ -72,7 +71,10 @@ interface CatsApi {
     @DELETE("images/{id}")
     suspend fun deleteImageById(@Path("id") id: Int): Response<Int>
 
-    //@POST("images/upload")
-    //suspend fun uploadCatImage(@Body body: File) : Response<Int>
+    @Multipart
+    @POST("images/upload")
+    suspend fun uploadImage(
+        @Part file: MultipartBody.Part
+    ): Response<UploadImageResponse>
 
 }

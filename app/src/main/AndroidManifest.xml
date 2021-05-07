@@ -13,6 +13,8 @@
     <!-- Adding the permission to access that camera -->
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application android:name=".FavCatsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

@@ -104,21 +104,16 @@
 
         </ScrollView>
 
-<!--        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/white_50percent"
-            android:layout_gravity="center_horizontal|bottom" >
-        </LinearLayout>-->
-
+        <!--Note: app:tint="@color/colorAccent" sets the color of the middle icon-->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/margin_m"
-            app:srcCompat="@drawable/ic_favorite_white_24"
+            android:backgroundTint="@color/fab_bg"
+            app:srcCompat="@drawable/ic_favorite_border_24"
+            app:tint="@color/colorAccent"
             android:contentDescription="@string/add_to_favorite" />
 
         <com.tuyenmonkey.mkloader.MKLoader
