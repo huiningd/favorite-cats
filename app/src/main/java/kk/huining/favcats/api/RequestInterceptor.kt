@@ -29,7 +29,8 @@ class RequestInterceptor @Inject constructor() : Interceptor {
 
     companion object {
         const val HEADER_API_KEY = "x-api-key"
-        const val API_KEY = "9b7e282d-2a67-4c7b-a9fd-3f3e4056e949"
+        // Register for API key: https://thecatapi.com/signup
+        const val API_KEY = "replace_with_your_own_api_kay"
     }
 
 }
